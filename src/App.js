@@ -1,63 +1,60 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import Inputs from "./components/Inputs";
+import getFormattedWeatherData from "./services/weatherServices";
+import Forecast from './components/Forecast';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Details from './components/Details';
+
 
 function App() {
-	const [data, setData] = useState({})
-	const [location, setLocation] = useState("")
-
-	const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=metric&appid=895284fb2d2c50a520ea537456963d9c`
-
-	const searchLocation = (event) => {
-		if (event.key === "Enter") {
-			axios.get(url).then((response) => {
-				setData(response.data)
-				console.log(response.data, "response.data")
-			})
-			setLocation("")
+	const [lat, setLat] = useState(null);
+	const [lon, setLon] = useState(null);
+	const [query, setQuery] = useState();
+	const [units, setUnits] = useState("metric");
+	const [weather, setWeather] = useState(null);
+	
+	useEffect(() => {
+		if (navigator.geolocation) {
+			// toast.info("Fetching users location.");
+			navigator.geolocation.getCurrentPosition((position) => {
+				// toast.success("Location fetched!");
+				setLat(position.coords.latitude);
+				setLon(position.coords.longitude);
+			});
 		}
-	}
+
+		console.log(lat, "ini nilai lat")
+
+	}, [lat, lon])
+
+	
+
+	useEffect(() => {
+		console.log(lat, "ini nilai lat yang ke 2")
+
+		const fetchWeather = async () => {
+			await getFormattedWeatherData({ lat: lat, lon: lon, ...query, units }).then((data) => {
+				setWeather(data);
+			});
+		};
+
+		fetchWeather();
+
+	}, [lat, lon, query, units]);
+
 
 	return (
 		<div className="app">
-			<div className="search">
-				<input
-					value={location}
-					onChange={event => setLocation(event.target.value)}
-					placeholder="Search for city.."
-					onKeyPress={searchLocation}
-					type="text" />
+			<Inputs setQuery={setQuery} units={units} setUnits={setUnits} />
 
-			</div>
-			<div className="container">
-				<div className="top">
-					<div className="location">
-						<p>{data.name}</p>
-					</div>
-					<div className="temp">
-						{data.main ? <h1>{data.main.temp.toFixed()}°C</h1> : null}
-					</div>
-					<div className="description">
-						{data.weather ? <p>{data.weather[0].main}</p> : null}
-					</div>
+			{weather &&
+				<div>
+					<Details weather={weather} />
+					<Forecast title="Weather Today" items={weather.hourly} />
 				</div>
+			}
 
-				{data.name !== undefined &&
-					<div className="bottom">
-						<div className="feels">
-							{data.main ? <p className='bold'>{data.main.feels_like.toFixed()}°F</p> : null}
-							<p>Feels Like</p>
-						</div>
-						<div className="humidity">
-							{data.main ? <p className='bold'>{data.main.humidity}%</p> : null}
-							<p>Humidity</p>
-						</div>
-						<div className="wind">
-							{data.wind ? <p className='bold'>{data.wind.speed.toFixed()} MPH</p> : null}
-							<p>Wind Speed</p>
-						</div>
-					</div>
-				}
-			</div>
 		</div>
 	);
 }
