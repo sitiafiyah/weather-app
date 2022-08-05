@@ -1,32 +1,32 @@
 import React from "react";
+import { BiMap } from "react-icons/bi";
+import { formatToLocalTime } from "../services/weatherServices";
 
-function Details({ 
+function Details({
     weather: {
+        dt,
+        timezone,
         name,
         details,
-        icson,
         temp,
-        temp_min,
-        temp_max,
-        sunrise,
-        sunset,
-        speed,
-        humidity,
-        feels_like,
-        timezone,
-      },
- }) {
+    },
+}) {
     return (
         <div className="details">
             <div className="top">
                 <div className="location">
-                    <p>{name}</p>
+                    <p style={{ fontSize: 30 }}>
+                        <BiMap size="25px" /> {name}
+                        <p style={{ fontSize: 20 }}>
+                            {formatToLocalTime(dt, timezone)}
+                        </p>
+                    </p>
                 </div>
                 <div className="temp">
-                    {temp ? <h1>{temp.toFixed()}°C</h1> : null}
+                    {temp ? <p style={{ fontSize: 110 }}> {temp.toFixed()}°C </p> : null}
                 </div>
                 <div className="description">
-                    {details ? <p>Its {details}</p> : null}
+                    {details ? <p style={{ fontSize: 40 }}>Its {details}</p> : null}
                 </div>
             </div>
         </div>

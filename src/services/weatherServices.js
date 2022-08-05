@@ -15,32 +15,21 @@ const getWeatherData = (infoType, searchParams) => {
 const formatCurrentWeather = (data) => {
   const {
     coord: { lat, lon },
-    main: { temp, feels_like, temp_min, temp_max, humidity },
+    main: { temp },
     name,
     dt,
-    sys: { country, sunrise, sunset },
     weather,
-    wind: { speed },
   } = data;
-
-  const { main: details, icon } = weather[0];
-
+  
+  const { main: details } = weather[0];
+  
   return {
-    lat,
-    lon,
-    temp,
-    feels_like,
-    temp_min,
-    temp_max,
-    humidity,
-    name,
     dt,
-    country,
-    sunrise,
-    sunset,
+    name,
     details,
-    icon,
-    speed,
+    temp,
+    lat,
+    lon
   };
 };
 
@@ -48,7 +37,7 @@ const formatForecastWeather = (data) => {
   let { timezone, daily, hourly } = data;
   daily = daily.slice(1, 6).map((d) => {
     return {
-      title: formatToLocalTime(d.dt, timezone, "ccc"),
+      time: formatToLocalTime(d.dt, timezone, "ccc"),
       temp: d.temp.day,
       icon: d.weather[0].icon,
     };
@@ -56,7 +45,7 @@ const formatForecastWeather = (data) => {
 
   hourly = hourly.slice(1, 6).map((d) => {
     return {
-      title: formatToLocalTime(d.dt, timezone, "hh:mm a"),
+      time: formatToLocalTime(d.dt, timezone, "hh:mm a"),
       temp: d.temp,
       icon: d.weather[0].icon,
     };
@@ -66,6 +55,7 @@ const formatForecastWeather = (data) => {
 };
 
 const getFormattedWeatherData = async (searchParams) => {
+  /**current weather */
   const formattedCurrentWeather = await getWeatherData(
     "weather",
     searchParams
@@ -73,12 +63,16 @@ const getFormattedWeatherData = async (searchParams) => {
 
   const { lat, lon } = formattedCurrentWeather;
 
+  /**daily and hourly */
   const formattedForecastWeather = await getWeatherData("onecall", {
     lat,
     lon,
     exclude: "current,minutely,alerts",
     units: searchParams.units,
   }).then(formatForecastWeather);
+
+  console.log(formattedCurrentWeather, "...formattedCurrentWeather")
+  console.log(formattedForecastWeather, "...formattedForecastWeather")
 
   return { ...formattedCurrentWeather, ...formattedForecastWeather };
 };
