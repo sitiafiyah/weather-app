@@ -3,7 +3,7 @@ import { iconUrlFromCode } from "../services/weatherServices";
 
 function Forecast({ title, items }) {
     return (
-        <div className="details-forecast container" style={{ maxWidth: 700 }}>
+        <div className="details-forecast container" style={{ maxWidth: 800 }}>
             <div className="row text-center" style={{ height: 70 }}>
                 <h3 style={{padding: "20px", color: "white"}}> {title} </h3>
             </div>

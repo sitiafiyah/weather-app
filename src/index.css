@@ -14,10 +14,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-p {
-  font-size: 1.6rem;
-}
-
 h1 {
   font-size: 6rem;
 }
@@ -64,7 +60,7 @@ p {
 }
 
 .details {
-  max-width: 700px;
+  max-width: 800px;
   height: 515px;
   margin: auto;
   padding: 0 1rem;
@@ -104,7 +100,7 @@ p {
 }
 
 .details-forecast {
-  max-width: 700px;
+  max-width: 900px;
   background-color: #8ca2b7;
   opacity: 70%;
   color: black;
